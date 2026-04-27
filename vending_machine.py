@@ -1,4 +1,5 @@
 import time
+import socket
 import RPi.GPIO as GPIO
 from drv8825 import DRV8825, CW
 from lcd1602 import LCD1602
@@ -40,6 +41,7 @@ class VendingMachine:
             "B2": lambda: self._select("B2"),
             "*": self._insert_coin,
             "#": self._refund,
+            "D": self._show_ip,
         }
 
         self.detector = KeySequenceDetector(
@@ -101,6 +103,18 @@ class VendingMachine:
             self.credit_cents = 0
             self._show("REFUND", amount)
         time.sleep(2)
+        self._show_idle()
+
+    def _show_ip(self):
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.connect(("8.8.8.8", 80))
+            ip = s.getsockname()[0]
+            s.close()
+        except Exception:
+            ip = "No network"
+        self._show("IP Address:", ip)
+        time.sleep(5)
         self._show_idle()
 
     def _dispense(self):

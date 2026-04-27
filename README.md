@@ -43,8 +43,11 @@ python restock.py
 | `2` | Select slot B2 |
 | `*` | Insert $0.25 |
 | `#` | Refund credit |
+| `D` | Show IP address |
 
 Press `*` multiple times to add more credit. Once credit meets or exceeds the item price, the machine dispenses automatically.
+
+Press `D` at any time to display the Pi's IP address on the LCD for 5 seconds — useful for finding the dashboard URL without needing a separate terminal.
 
 ---
 
