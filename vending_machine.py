@@ -111,9 +111,10 @@ class VendingMachine:
             s.connect(("8.8.8.8", 80))
             ip = s.getsockname()[0]
             s.close()
+            url = f"http://{ip}:5000"
         except Exception:
-            ip = "No network"
-        self._show("IP Address:", ip)
+            url = "No network"
+        self._show(url[:16], url[16:])
         time.sleep(5)
         self._show_idle()
 
