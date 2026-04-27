@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="container">
+  <h2 style="margin-top:1.5rem">Inventory</h2>
+  <p style="color:var(--pico-muted-color)">Edit names, prices, and quantities, then save. Restock sets all quantities back to their max.</p>
+
+  {% if flash %}
+  <div class="flash {{ 'err' if flash_err }}">{{ flash }}</div>
+  {% endif %}
+
+  <form method="POST" action="/manager/save">
+    <table>
+      <thead>
+        <tr><th>Slot</th><th>Item name</th><th>Price ($)</th><th>Quantity</th><th>Max qty</th></tr>
+      </thead>
+      <tbody>
+        {% for item in stock %}
+        <tr>
+          <td><strong>{{ item.slot_id }}</strong><input type="hidden" name="slot_id" value="{{ item.slot_id }}"></td>
+          <td><input type="text"   name="name"         value="{{ item.name }}" required style="margin:0"></td>
+          <td><input type="number" name="price_dollars" value="{{ "%.2f"|format(item.price_cents / 100) }}" min="0" step="0.01" required style="margin:0"></td>
+          <td><input type="number" name="quantity"      value="{{ item.quantity }}"     min="0" required style="margin:0"></td>
+          <td><input type="number" name="max_quantity"  value="{{ item.max_quantity }}" min="1" required style="margin:0"></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div style="display:flex;gap:.75rem;margin-top:1rem;flex-wrap:wrap">
+      <button type="submit">Save changes</button>
+      <button type="submit" formaction="/manager/restock" class="secondary">Restock all to max</button>
+    </div>
+  </form>
+
+  <hr>
+
+  <h2>Analytics</h2>
+  <p style="color:var(--pico-muted-color)">Previous records are preserved in a timestamped archive. The dashboard resets to zero.</p>
+  <form method="POST" action="/manager/reset-analytics"
+        onsubmit="return confirm('Reset analytics? Current data will be archived before clearing.')">
+    <button type="submit" class="secondary">Reset analytics</button>
+  </form>
+
+  <hr>
+
+  <h2>Change password</h2>
+  <p style="color:var(--pico-muted-color)">Applies immediately. You will need to sign in again after changing.</p>
+  <form method="POST" action="/manager/change-password" style="max-width:360px">
+    <label>New password
+      <input type="password" name="pw1" required minlength="4">
+    </label>
+    <label>Confirm new password
+      <input type="password" name="pw2" required minlength="4">
+    </label>
+    <button type="submit" class="secondary">Update password</button>
+  </form>
+
+  <hr>
+
+  <form method="POST" action="/logout" style="margin-bottom:2rem">
+    <button type="submit" class="outline secondary">Sign out</button>
+  </form>
+</main>
+{% endblock %}

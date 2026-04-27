@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vending Machine</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+<header>
+  <div class="container">
+    <hgroup style="margin:0"><h1 style="margin:0">Vending Machine</h1></hgroup>
+    <nav>
+      <a href="/"        class="{{ 'active' if page == 'dashboard' }}">Dashboard</a>
+      <a href="/records" class="{{ 'active' if page == 'records' }}">Records</a>
+      <a href="/manager" class="{{ 'active' if page == 'manager' or page == 'login' }}">Manager</a>
+    </nav>
+  </div>
+</header>
+{% block content %}{% endblock %}
+</body>
+</html>

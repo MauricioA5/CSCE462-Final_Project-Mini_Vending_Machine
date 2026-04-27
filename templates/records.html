@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="container">
+  <h2 style="margin-top:1.5rem">Transaction Records</h2>
+  <p style="color:var(--pico-muted-color)">All transaction logs available for download. Archives are created when analytics are reset from the Manager page.</p>
+
+  <table>
+    <thead><tr><th>File</th><th>Size</th><th>Last modified</th><th></th></tr></thead>
+    <tbody>
+      {% for f in files %}
+      <tr>
+        <td><code>{{ f.name }}</code>{% if f.current %} <span class="badge b-dispense">current</span>{% endif %}</td>
+        <td>{{ f.size }}</td>
+        <td>{{ f.modified }}</td>
+        <td><a href="/records/download/{{ f.name }}" role="button" class="secondary" style="padding:.3rem .8rem;font-size:.85rem">Download</a></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4">No records found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</main>
+{% endblock %}

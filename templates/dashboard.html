@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block head %}
+  <meta http-equiv="refresh" content="30">
+{% endblock %}
+
+{% block content %}
+<main class="container">
+  <p style="color:var(--pico-muted-color);margin-top:1rem">Refreshes every 30 s &mdash; {{ now }}</p>
+
+  <div class="stats">
+    <div class="stat"><small>Revenue</small><strong>${{ "%.2f"|format(revenue / 100) }}</strong><small>{{ dispenses }} sales</small></div>
+    <div class="stat"><small>Refunded</small><strong>${{ "%.2f"|format(refunded / 100) }}</strong></div>
+    <div class="stat"><small>Coins inserted</small><strong>${{ "%.2f"|format(coins / 100) }}</strong></div>
+    <div class="stat"><small>Out-of-stock hits</small><strong>{{ oos_count }}</strong></div>
+  </div>
+
+  <h2>Stock</h2>
+  <table>
+    <thead><tr><th>Slot</th><th>Item</th><th>Price</th><th>In Stock</th><th>Max</th></tr></thead>
+    <tbody>
+      {% for item in stock %}
+      <tr>
+        <td>{{ item.slot_id }}</td>
+        <td>{{ item.name }}</td>
+        <td>${{ "%.2f"|format(item.price_cents / 100) }}</td>
+        <td class="{{ 'low' if item.quantity == 0 else '' }}">
+          {{ item.quantity }}{% if item.quantity == 0 %} &mdash; OUT{% endif %}
+        </td>
+        <td>{{ item.max_quantity }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h2>Sales by slot</h2>
+  <table>
+    <thead><tr><th>Slot</th><th>Item</th><th>Units sold</th><th>Revenue</th></tr></thead>
+    <tbody>
+      {% for row in slot_summary %}
+      <tr>
+        <td>{{ row.slot }}</td><td>{{ row.item }}</td>
+        <td>{{ row.units }}</td><td>${{ "%.2f"|format(row.revenue / 100) }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4">No sales yet</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h2>Recent transactions</h2>
+  <table>
+    <thead><tr><th>Time</th><th>Event</th><th>Slot</th><th>Item</th><th>Amount</th></tr></thead>
+    <tbody>
+      {% for row in recent %}
+      <tr>
+        <td>{{ row.timestamp }}</td>
+        <td>
+          {% if row.event == "DISPENSE" %}<span class="badge b-dispense">Dispense</span>
+          {% elif row.event == "REFUND" %}<span class="badge b-refund">Refund</span>
+          {% elif row.event == "COIN_INSERT" %}<span class="badge b-coin">Coin</span>
+          {% elif row.event == "OUT_OF_STOCK" %}<span class="badge b-outofstock">Out of Stock</span>
+          {% else %}<span class="badge">{{ row.event }}</span>{% endif %}
+        </td>
+        <td>{{ row.slot or "—" }}</td>
+        <td>{{ row.item or "—" }}</td>
+        <td>
+          {% if row.event == "DISPENSE" %}${{ "%.2f"|format(row.price_cents|int / 100) }}
+          {% elif row.event in ["REFUND", "COIN_INSERT"] %}${{ "%.2f"|format(row.amount_cents|int / 100) }}
+          {% else %}—{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <small>{{ total_rows }} total records in transactions.csv</small>
+</main>
+{% endblock %}
